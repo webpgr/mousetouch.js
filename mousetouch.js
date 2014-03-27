@@ -227,8 +227,8 @@ var mousetouch = mousetouch || {};
       lastGesture.last = true;
       if (!gestures_detected.move && !gestures_detected.multi && !gestures_detected.wheel) {
         lastGesture.click = true;
-        lastGesture.var_doubleclick = !! gestures_detected.var_double;
-        lastGesture.var_longclick = !! gestures_detected.var_long;
+        lastGesture.doubleclick = !! gestures_detected.var_double;
+        lastGesture.longclick = !! gestures_detected.var_long;
       }
       reset = true;
       // send after reseting state to ensure reset even if client handler breaks;
