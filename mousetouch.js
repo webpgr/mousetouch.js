@@ -227,8 +227,8 @@ var mousetouch = mousetouch || {};
       lastGesture.last = true;
       if (!gestures_detected.move && !gestures_detected.multi && !gestures_detected.wheel) {
         lastGesture.click = true;
-        lastGesture.doubleclick = !! gestures_detected.var_double;
-        lastGesture.longclick = !! gestures_detected.var_long;
+        lastGesture.doubleclick = !! gestures_detected.dbl;
+        lastGesture.longclick = !! gestures_detected.lng;
       }
       reset = true;
       // send after reseting state to ensure reset even if client handler breaks;
@@ -353,8 +353,8 @@ var mousetouch = mousetouch || {};
     // inject further properties calculated from current gesture state
     add_properties(gesture, {
       event: e,
-      var_double: gestures_detected.hasOwnProperty('var_double'),
-      var_long: gestures_detected.hasOwnProperty('var_long'),
+      dbl: gestures_detected.hasOwnProperty('dbl'),
+      lng: gestures_detected.hasOwnProperty('lng'),
       multi: gestures_detected.hasOwnProperty('multi'),
       transform: gestures_detected.hasOwnProperty('transform'),
       move: gestures_detected.hasOwnProperty('move'),
@@ -418,8 +418,8 @@ var mousetouch = mousetouch || {};
       temp_abort = true; // set temp abort, but do not trigger gesture_send for latest down and up events (only applies if waitdoubleclick is true)
       temp_downGesture = undefined;
       temp_upGesture = undefined;
-      gestures_detected.var_double = true;
-      gesture.var_double = true; //inject into current down gesture as well (this already has been filled with gesture_fill)
+      gestures_detected.dbl = true;
+      gesture.dbl = true; //inject into current down gesture as well (this already has been filled with gesture_fill)
       return gesture_send(gesture);
     } else {
       if (temp_downGesture) {
@@ -444,7 +444,7 @@ var mousetouch = mousetouch || {};
           if (curGID != gestureID) return; // not my gesture anymore
           if (temp_long) { // warning, long click detection does not react on temp_abort; temp_long is falsified extra in temp_gesture_abort if not call with parameter true
             if (config('debug')) console.log("mousetouch long click timeout");
-            gestures_detected.var_long = true;
+            gestures_detected.lng = true;
           }
           temp_long = false;
         }, config('long_ms'));
