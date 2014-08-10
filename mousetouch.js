@@ -238,10 +238,9 @@ var mousetouch = mousetouch || {};
   var gesture_move = function(e) {
     if (current == undefined) return; // not in a gesture
     if (config('debug')) console.log("move");
-    temp_gesture_abort();
-    gestures_detected.move = true;
     var gesture = lastGesture;
     // update position
+    var newpos={};
     if (touch) {
       for (var i = 0; i < e.changedTouches.length; i++) {
         for (var n = 0; n < touches.length; n++) {
@@ -252,12 +251,19 @@ var mousetouch = mousetouch || {};
         }
       }
       var touchavg = average_touches();
-      gesture.x = touchavg.x;
-      gesture.y = touchavg.y;
+      newpos.x = touchavg.x;
+      newpos.y = touchavg.y;
     } else {
-      gesture.x = mousePos.x;
-      gesture.y = mousePos.y;
+      newpos.x = mousePos.x;
+      newpos.y = mousePos.y;
     }
+    if (Math.abs(newpos.x-gesture.start.x)+Math.abs(newpos.y-gesture.start.y)==0){
+      return; //ignore, this is not a move
+    }
+    temp_gesture_abort();
+    gesture.x=newpos.x;
+    gesture.y=newpos.y;
+    gestures_detected.move = true;
     gesture.shift = {
       x: gesture.x - gesture.start.x,
       y: gesture.y - gesture.start.y
