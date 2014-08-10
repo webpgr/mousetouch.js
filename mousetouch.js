@@ -159,7 +159,7 @@ var mousetouch = mousetouch || {};
       last: false
     };
     // if there is a current gesture and there is a new down event we need to cancel the current gesture and continue
-    // with the new one 
+    // with the new one
     // e.g. transition from single touch to double touch
     if (lastGesture && config('cancelgestures')) { // send a cancel gesture
       gesture_cancel(); // this also does temp_gesture_abort();
@@ -295,6 +295,7 @@ var mousetouch = mousetouch || {};
     gesture_down(e); // send a down gesture
     var gesture = lastGesture;
     var delta;
+    var deltaX;
     if (e.wheelDelta) { /* IE/Opera. */
       delta = e.wheelDelta / 120;
     } else if (e.detail) { /** Mozilla case. */
@@ -303,6 +304,13 @@ var mousetouch = mousetouch || {};
        */
       delta = -e.detail / 3;
     }
+    if (e.deltaX || e.deltaY || e.wheelDeltaX || e.wheelDeltaY){
+      if (e.deltaY) delta=e.deltaY/120;
+      if (e.wheelDeltaY) delta=e.wheelDeltaY/120;
+      if (e.deltaX) deltaX=e.deltaX/120;
+      if (e.wheelDeltaX) deltaX=e.wheelDeltaX/120;
+    }
+    //console.log("wheel: delta: " + delta + ", deltaX: " + deltaX)
     // should we send a scaling gesture?
     if (e.ctrlKey && config('wheelscalectrl') ||
       e.altKey && config('wheelscalealt') ||
@@ -337,6 +345,15 @@ var mousetouch = mousetouch || {};
         x: delta * config('wheelxmovedelta'),
         y: 0
       };
+      gesture.x += gesture.shift.x;
+      gestures_detected.move = true;
+      if (config('preventdefault_wheel')) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }
+    if (deltaX) {
+      gesture.shift.x +=deltaX * config('wheelxmovedelta'),
       gesture.x += gesture.shift.x;
       gestures_detected.move = true;
       if (config('preventdefault_wheel')) {
@@ -656,7 +673,7 @@ var mousetouch = mousetouch || {};
         return;
       }
       // crossbrowser pageXY from jquery
-      // Calculate pageX/Y if missing and clientX/Y available 
+      // Calculate pageX/Y if missing and clientX/Y available
       if (!touch && e.pageX === undefined && e.clientX !== undefined) {
         eventDoc = e.target.ownerDocument || document;
         doc = eventDoc.documentElement;
@@ -702,7 +719,8 @@ var mousetouch = mousetouch || {};
         e.preventDefault();
       }
       // now call the actuall handler
-      return eventHandle.call(elem, e);
+      var result = eventHandle.call(elem, e);
+      return result;
     }
     // bind event
     if (elem.addEventListener) { // all modern browsers
@@ -738,7 +756,7 @@ var mousetouch = mousetouch || {};
     for (key in obj) {}
     return key === undefined || obj.hasOwnProperty(key);
   }
-  // deep clone objects; modified from jquery extend; 
+  // deep clone objects; modified from jquery extend;
   var dclone = function() {
     var length = arguments.length,
       target = length == 1 ? {} : arguments[0],
